@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, abort
+from flask import Flask, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 
