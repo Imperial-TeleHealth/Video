@@ -48,3 +48,11 @@ class TestVideoMicroService(TestCase):
         self.assertTrue("meet.jit.si" in data['meeting_link'])
         self.assertNotEqual(data['meeting_link'], "")
 
+    def test_delete_appointment(self):
+        appointment = Appointment(id='some-unique-appointment-id', patient_id='1', doctor_id='1', schedule_time='10:00', meeting_link='https://meet.jit.si/1+1+10:00')
+        db.session.add(appointment)
+        db.session.commit()
+
+        response = self.client.delete(f'/delete-appointment/some-unique-appointment-id')
+        self.assertEqual(db.session.get(Appointment, 'some-unique-appointment-id'), None)
+
