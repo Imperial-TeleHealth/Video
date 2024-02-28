@@ -1,15 +1,43 @@
 from flask import Flask, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
+from sqlalchemy import text
 import uuid
+import urllib.parse
+import os
+import pyodbc
+
+load_dotenv()
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///video-test.db'
+password = os.getenv('AY_AZURE_SQL_PASSWORD')
+username = os.getenv('AY_AZURE_SQL_USERNAME')
+
+params = urllib.parse.quote_plus("DRIVER={ODBC Driver 18 for SQL Server};"
+                                 "Server=tcp:telehealth-video.database.windows.net,1433;"
+                                 "Database=video;"
+                                 f"Uid={username};"
+                                 f"Pwd={password};"
+                                 "Encrypt=yes;"
+                                 "TrustServerCertificate=no;"
+                                 "Connection Timeout=30;")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect=%s" % params
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+@app.route("/test-db")
+def test_db():
+    try:
+        # Directly execute a raw SQL command
+        result = db.session.execute(text("SELECT 1")).fetchall()
+        return 'Success!'
+    except Exception as e:
+        return str(e)
+
 class Appointment(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String(36), primary_key=True)
     patient_id = db.Column(db.String(80), nullable=False)
     doctor_id = db.Column(db.String(80), nullable=False)
     schedule_time = db.Column(db.String(80), nullable=False)
@@ -20,8 +48,9 @@ with app.app_context():
 
 @app.route("/")
 def root():
-    return jsonify({"message": "Hello World"})
+    return jsonify({"message": username, "password": password})
 
+# Create a Jitsi meeting link
 def create_jitsi_meeting(patient_id, doctor_id, schedule_time):
     meeting_link = f"https://meet.jit.si/{patient_id}+{doctor_id}+{schedule_time}"
     return meeting_link
@@ -32,7 +61,20 @@ def store_appointment(patient_id, doctor_id, schedule_time, meeting_link):
     db.session.add(new_appointment)
     db.session.commit()
     return appointment_id
-        
+
+# Create endpoint to add sample data to the database
+@app.route('/add-sample-data', methods=['POST'])
+def add_sample_data():
+    data = {
+        'patient_id': '123',
+        'doctor_id': '456',
+        'schedule_time': '2022-01-01 10:00:00',
+        'meeting_link': 'https://meet.jit.si/123+456+2022-01-01'
+    }
+    appointment_id = store_appointment(data['patient_id'], data['doctor_id'], data['schedule_time'], data['meeting_link'])
+    return jsonify({"appointment_id": appointment_id})
+
+
 # Want to schedule appointment
 @app.route('/schedule-appointment', methods=['POST'])
 def schedule_appointment():
@@ -49,7 +91,15 @@ def get_appointment(appointment_id):
         abort(404, description="Appointment not found")
     return jsonify({"meeting_link": appointment.meeting_link})
 
-
+# Want to delete appointment
+@app.route('/delete-appointment/<appointment_id>', methods=['DELETE'])
+def delete_appointment(appointment_id):
+    appointment = db.session.get(Appointment, appointment_id)
+    if not appointment:
+        abort(404, description="Appointment not found")
+    db.session.delete(appointment)
+    db.session.commit()
+    return jsonify({"message": "Appointment deleted"})
 
 if __name__ == '__main__':
     app.run(debug=True)
