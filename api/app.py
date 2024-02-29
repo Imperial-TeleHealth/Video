@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from sqlalchemy import text
@@ -62,17 +62,20 @@ def store_appointment(patient_id, doctor_id, schedule_time, meeting_link):
     db.session.commit()
     return appointment_id
 
-# Create endpoint to add sample data to the database
-@app.route('/add-sample-data', methods=['POST'])
+def retrieve_sample_data():
+    data = db.session.query(Appointment).all()
+    return data
+
+# Create endpoint to retrieve sample data from the database
+@app.route('/add-sample-data', methods=['GET', 'POST'])
 def add_sample_data():
-    data = {
-        'patient_id': '123',
-        'doctor_id': '456',
-        'schedule_time': '2022-01-01 10:00:00',
-        'meeting_link': 'https://meet.jit.si/123+456+2022-01-01'
-    }
-    appointment_id = store_appointment(data['patient_id'], data['doctor_id'], data['schedule_time'], data['meeting_link'])
-    return jsonify({"appointment_id": appointment_id})
+    if request.method == 'POST':
+        data = request.get_json()
+        appointment_id = store_appointment(data['patient_id'], data['doctor_id'], data['schedule_time'], data['meeting_link'])
+        return jsonify({"appointment_id": appointment_id})
+    else:
+        data = retrieve_sample_data()  # function to retrieve sample data from the database
+        return render_template('index.html', data=data)
 
 
 # Want to schedule appointment
