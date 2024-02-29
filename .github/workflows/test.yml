@@ -64,3 +64,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          context: .
+          build-args: |
+            AY_AZURE_SQL_PASSWORD=${{ secrets.AY_AZURE_SQL_PASSWORD }}
+            AY_AZURE_SQL_USERNAME=${{ secrets.AY_AZURE_SQL_USERNAME }}

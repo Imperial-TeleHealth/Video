@@ -5,7 +5,6 @@ from sqlalchemy import text
 import uuid
 import urllib.parse
 import os
-import pyodbc
 
 load_dotenv()
 
