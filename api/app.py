@@ -47,7 +47,7 @@ with app.app_context():
 
 @app.route("/")
 def root():
-    return jsonify({"message": username, "password": password})
+    return jsonify({"message": "App is running"})
 
 # Create a Jitsi meeting link
 def create_jitsi_meeting(patient_id, doctor_id, schedule_time):
