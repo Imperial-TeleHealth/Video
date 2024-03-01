@@ -16,8 +16,8 @@ username = os.getenv('AY_AZURE_SQL_USERNAME')
 params = urllib.parse.quote_plus("DRIVER={ODBC Driver 18 for SQL Server};"
                                  "Server=tcp:telehealth-video.database.windows.net,1433;"
                                  "Database=video;"
-                                 "Uid=may17;"
-                                 "Pwd=Lead1998fein;"
+                                 f"Uid={username};"
+                                 f"Pwd={password};"
                                  "Encrypt=yes;"
                                  "TrustServerCertificate=no;"
                                  "Connection Timeout=30;")
