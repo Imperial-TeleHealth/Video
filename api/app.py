@@ -6,7 +6,7 @@ import uuid
 import urllib.parse
 import os
 
-load_dotenv()
+# load_dotenv()
 
 app = Flask(__name__)
 
@@ -25,6 +25,11 @@ params = urllib.parse.quote_plus("DRIVER={ODBC Driver 18 for SQL Server};"
 app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc:///?odbc_connect=%s" % params
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+@app.route("/")
+def home():
+    return "Welcome to Telehealth Video API!"
+
 
 @app.route("/test-db")
 def test_db():
@@ -47,7 +52,7 @@ with app.app_context():
 
 @app.route("/")
 def root():
-    return jsonify({"message": "App is running"})
+    return render_template('schedule-appointment.html')
 
 # Create a Jitsi meeting link
 def create_jitsi_meeting(patient_id, doctor_id, schedule_time):
@@ -77,7 +82,15 @@ def add_sample_data():
         return render_template('index.html', data=data)
 
 
-# Want to schedule appointment
+# Want to schedule appointment 
+# @app.route('/schedule-appointment', methods=['POST'])
+# def schedule_appointment():
+#     data = request.form
+#     meeting_link = create_jitsi_meeting(data['patient_id'], data['doctor_id'], data['schedule_time'])
+#     appointment_id = store_appointment(data['patient_id'], data['doctor_id'], data['schedule_time'], meeting_link)
+#     return jsonify({"appointment_id": appointment_id, "meeting_link": meeting_link})
+
+
 @app.route('/schedule-appointment', methods=['POST'])
 def schedule_appointment():
     data = request.get_json()

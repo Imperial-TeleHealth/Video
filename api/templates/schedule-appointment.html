@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule Appointment</title>
+</head>
+<body>
+    <h1>Schedule Appointment</h1>
+    <form action="http://localhost:5000/schedule-appointment" method="post">
+        <label for="patient_id">Patient ID:</label><br>
+        <input type="text" id="patient_id" name="patient_id"><br>
+        <label for="doctor_id">Doctor ID:</label><br>
+        <input type="text" id="doctor_id" name="doctor_id"><br>
+        <label for="schedule_time">Schedule Time:</label><br>
+        <input type="datetime-local" id="schedule_time" name="schedule_time"><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
