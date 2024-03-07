@@ -51,10 +51,10 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.DOCKER_SECRET }}
-    
-    name: Set up Docker buildx
-    id: setup-buildx
-    uses: docker/setup-buildx-action@v3
+      
+      - name: Set up Docker buildx
+        id: setup-buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
