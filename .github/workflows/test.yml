@@ -55,9 +55,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.DOCKER_SECRET }}
       
-      - name: Set up Docker buildx
-        id: setup-buildx
-        uses: docker/setup-buildx-action@v3
+      # - name: Set up Docker buildx
+      #   id: setup-buildx
+      #   uses: docker/setup-buildx-action@v3
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -72,8 +72,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          builder: ${{ steps.setup-buildx.outputs.name }}
-          platform: linux/amd64
+          # builder: ${{ steps.setup-buildx.outputs.name }}
+          # platform: linux/amd64
           build-args: |
             AY_AZURE_SQL_PASSWORD=${{ secrets.AY_AZURE_SQL_PASSWORD }}
             AY_AZURE_SQL_USERNAME=${{ secrets.AY_AZURE_SQL_USERNAME }}
