@@ -57,10 +57,12 @@ def root():
 
 # Create a Jitsi meeting link
 def create_jitsi_meeting(patient_id, doctor_id, schedule_time):
-    meeting_link = f"https://meet.jit.si/{patient_id}+{doctor_id}+{schedule_time}"
-    cleaned_meeting_link = re.sub(r'[?&:\'"%#]', '', meeting_link)
-    cleaned_meeting_link = re.sub(r'https', 'https:', cleaned_meeting_link)
-    return cleaned_meeting_link     
+    base_url = "https://meet.jit.si/"
+    meeting_id = f"{patient_id}+{doctor_id}+{schedule_time}"
+    sanitized_meeting_id = meeting_id.translate(str.maketrans("", "", "?:'\"%#"))
+    sanitized_meeting_id = sanitized_meeting_id.replace("&", "+")
+    meeting_link = base_url + sanitized_meeting_id.replace(":", "")
+    return meeting_link
 
 def store_appointment(patient_id, doctor_id, schedule_time, meeting_link):
     appointment_id = str(uuid.uuid4()) 
