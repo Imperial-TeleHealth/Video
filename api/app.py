@@ -5,6 +5,7 @@ from sqlalchemy import text
 import uuid
 import urllib.parse
 import os
+import re
 
 # load_dotenv()
 
@@ -57,7 +58,8 @@ def root():
 # Create a Jitsi meeting link
 def create_jitsi_meeting(patient_id, doctor_id, schedule_time):
     meeting_link = f"https://meet.jit.si/{patient_id}+{doctor_id}+{schedule_time}"
-    return meeting_link
+    cleaned_meeting_link = re.sub(r'[?&:\'"%#]', '', meeting_link)
+    return cleaned_meeting_link     
 
 def store_appointment(patient_id, doctor_id, schedule_time, meeting_link):
     appointment_id = str(uuid.uuid4()) 
@@ -81,16 +83,7 @@ def add_sample_data():
         data = retrieve_sample_data()  # function to retrieve sample data from the database
         return render_template('index.html', data=data)
 
-
-# Want to schedule appointment 
-# @app.route('/schedule-appointment', methods=['POST'])
-# def schedule_appointment():
-#     data = request.form
-#     meeting_link = create_jitsi_meeting(data['patient_id'], data['doctor_id'], data['schedule_time'])
-#     appointment_id = store_appointment(data['patient_id'], data['doctor_id'], data['schedule_time'], meeting_link)
-#     return jsonify({"appointment_id": appointment_id, "meeting_link": meeting_link})
-
-
+# Want to schedule an appointment
 @app.route('/schedule-appointment', methods=['POST'])
 def schedule_appointment():
     data = request.get_json()
